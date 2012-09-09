@@ -1,10 +1,11 @@
 float len[];
-int N = 8;
+int N = 6;
 PVector from;
 PVector to;
 
 void start() {
   size(800,600);
+  background(255);
   len = new float[N];
   // equal lengths
   //for(int i=0; i<N; i++) len[i] = dist(0,0,width,height)*1f/N;
@@ -15,7 +16,7 @@ void start() {
 }
 
 void draw() {
-  background(255);
+  if(RANDOMIZE) stroke(random(256),random(256),random(256));
   PVector[] lines = inverseKinematics(len, PVector.sub(to,from));
   PVector pen = from.get();
   for(int i=0; i<lines.length; i++) {
@@ -32,6 +33,7 @@ void mousePressed() {
   } else if(mouseButton == RIGHT) {
     to = p;
   }
+  background(255);
 }
 
 void drawLine(PVector a,PVector b) {

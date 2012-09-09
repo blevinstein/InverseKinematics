@@ -1,5 +1,6 @@
 // tolerance allowed when checking for floating point equality
 float TOL = .0001;
+boolean RANDOMIZE = false;
 
 /*
  * calculates a set of vectors r,
@@ -14,6 +15,7 @@ PVector[] inverseKinematics(float len[],PVector disp) {
   // calculate perpendicular vector to disp_unit
   // TODO: choose perpendicular direction based on preference
   PVector disp_perp = new PVector(disp_unit.y,-disp_unit.x);
+  if(RANDOMIZE && floor(random(2))==0) disp_perp.mult(-1);
   // NOTE: with better floating point equality checking, N=1 should be base
   // N=1 trivial case
   if(len.length == 1) {
@@ -38,6 +40,7 @@ PVector[] inverseKinematics(float len[],PVector disp) {
   // choose distance
   // TODO: choose a radius between range min and max based on preference
   float radius = (range.x + range.y)/2;
+  if(RANDOMIZE) radius = range.x + random(range.y-range.x);
   // calculate triangle parameters
   float cosr = (sq(len[0]) + sq(m) - sq(radius)) / (2*len[0]*m);
   float d = len[0] * cosr;
