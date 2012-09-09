@@ -9,8 +9,10 @@ void start() {
   len = new float[N];
   // equal lengths
   //for(int i=0; i<N; i++) len[i] = dist(0,0,width,height)*1f/N;
-  // exponential lengths
-  for(int i=0; i<N; i++) len[i] = dist(0,0,width,height)*pow(2,-(i+1)); len[N-1] = len[N-2];
+  // exponential decreasing lengths
+  //for(int i=0; i<N; i++) len[i] = dist(0,0,width,height)*pow(2,-(i+1)); len[N-1] = len[N-2];
+  // exponential increasing lengths
+  for(int i=0; i<N; i++) len[i] = dist(0,0,width,height)*pow(2,i-N); len[0] = len[1];
   from = new PVector(width/4f,height/4f);
   to = new PVector(width*3/4f,height*3/4f);
 }
