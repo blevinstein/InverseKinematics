@@ -60,23 +60,13 @@ PVector[] inverseKinematics(float len[],PVector disp) {
  */
 // NOTE: uses PVector to represent a range
 PVector radius_range(float len[]) {
-  // N=1 base case
-  if(len.length == 1) {
-    return new PVector(len[0],len[0]);
+  PVector r = new PVector(len[0],len[0]);
+  for(int i=1; i<len.length; i++) {
+    if(len[i] > r.y) {
+      r = new PVector(len[i] - r.y,len[i] + r.y);
+    } else {
+      r = new PVector(max(r.x - len[i],0), r.y + len[i]);
+    }
   }
-  // N>1 recursive case
-  // copy lengths array and sort
-  float tLen[] = new float[len.length];
-  arrayCopy(len,tLen);
-  sort(tLen);
-  // recurse
-  float rLen[] = new float[len.length-1];
-  arrayCopy(tLen,rLen,len.length-1);
-  PVector r = radius_range(rLen);
-  r.y += tLen[len.length-1];
-  if(r.x > 0)
-    r.x -= tLen[len.length-1];
-  if(r.x < 0)
-    r.x = 0;
   return r;
 }
