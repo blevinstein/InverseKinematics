@@ -23,9 +23,11 @@ void draw() {
   PVector pen = from.get();
   for(int i=0; i<lines.length; i++) {
     PVector next = PVector.add(pen,lines[i]);
+    drawCircle(pen, 5);
     drawLine(pen, next);
     pen = next;
   }
+  drawCircle(pen, 5);
 }
 
 void mousePressed() {
@@ -36,6 +38,11 @@ void mousePressed() {
     to = p;
   }
   background(255);
+}
+
+void drawCircle(PVector a,float r) {
+  ellipseMode(CENTER);
+  ellipse(a.x, a.y, r, r);
 }
 
 void drawLine(PVector a,PVector b) {
