@@ -1,5 +1,5 @@
 // tolerance allowed when checking for floating point equality
-float TOL = .0001;
+float TOL = .001;
 boolean RANDOMIZE = false;
 
 /*
@@ -29,7 +29,7 @@ PVector[] inverseKinematics(float len[],PVector disp) {
   arrayCopy(len, 1, rLen, 0, len.length-1);
   // check that a solution is possible
   PVector total_range = radius_range(len);
-  assert(total_range.x <= m && m <= total_range.y);
+  assert(total_range.x <= m+TOL && m-TOL <= total_range.y);
   // get possible range for recursive ase
   PVector range = radius_range(rLen);
   // limit range based on len[0]
@@ -40,12 +40,13 @@ PVector[] inverseKinematics(float len[],PVector disp) {
   // choose distance
   // TODO: choose a radius between range min and max based on preference
   float radius = (range.x + range.y)/2;
-  if(RANDOMIZE) radius = range.x + random(range.y-range.x);
+  if(RANDOMIZE) radius = range.x + random(range.y - range.x);
   // calculate triangle parameters
   float cosr = (sq(len[0]) + sq(m) - sq(radius)) / (2*len[0]*m);
+  assert(cosr <= 1 + TOL);
+  if(cosr > 1) cosr = 1;
   float d = len[0] * cosr;
   float h = len[0] * sqrt(1 - sq(cosr));
-  assert(!Float.isNaN(h));
   // calculate vectors
   PVector first[] = new PVector[1];
   first[0] = PVector.add(PVector.mult(disp_unit,d), PVector.mult(disp_perp,h));
