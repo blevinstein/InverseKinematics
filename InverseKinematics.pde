@@ -2,31 +2,41 @@
 float TOL = .001;
 boolean RANDOMIZE = false;
 
+PVector[] inverseKinematics(float len[], PVector disp) {
+  float prefs[] = new float[len.length - 1];
+  for(int i=0; i<prefs.length; i++) prefs[i] = 0;
+  return inverseKinematics(len, disp, prefs);
+}
+
 /*
  * calculates a set of vectors r,
- * such that r[i].mag() == len[i]
- * and the sum of all r[i] == disp
+ * such that r[i].mag() == len[i],
+ * the sum of all r[i] == disp, and
+ * preferences are respected
  */
-PVector[] inverseKinematics(float len[],PVector disp) {
+PVector[] inverseKinematics(float len[], PVector disp, float prefs[]) {
   assert(len.length > 0);
   // split disp into magnitude m and unit vector
   float m = disp.mag();
   PVector disp_unit = disp.get(); disp_unit.normalize();
-  // calculate perpendicular vector to disp_unit
-  // TODO: choose perpendicular direction based on preference
-  PVector disp_perp = new PVector(disp_unit.y,-disp_unit.x);
-  if(RANDOMIZE && floor(random(2))==0) disp_perp.mult(-1);
-  // NOTE: with better floating point equality checking, N=1 should be base
-  // N=1 trivial case
+  // N=1 base case
   if(len.length == 1) {
     assert(abs(m-len[0]) < TOL);
     PVector r[] = new PVector[1];
     r[0] = disp.get();
     return r;
   }
+  // calculate perpendicular vector to disp_unit
+  PVector disp_perp = prefs[0] < 0 ?
+                      new PVector(-disp_unit.y,disp_unit.x) :
+                      new PVector(disp_unit.y,-disp_unit.x);
+  if(RANDOMIZE && floor(random(2))==0) disp_perp.mult(-1);
   // N>1 recursive case
+  // create recursive arrays
   float rLen[] = new float[len.length-1];
   arrayCopy(len, 1, rLen, 0, len.length-1);
+  float rPrefs[] = new float[prefs.length-1];
+  arrayCopy(prefs, 1, rPrefs, 0, prefs.length-1);
   // check that a solution is possible
   PVector total_range = radius_range(len);
   assert(total_range.x <= m+TOL && m-TOL <= total_range.y);
@@ -38,19 +48,20 @@ PVector[] inverseKinematics(float len[],PVector disp) {
   if(range.x < tMin) range.x = tMin;
   if(range.y > tMax) range.y = tMax;
   // choose distance
-  // TODO: choose a radius between range min and max based on preference
-  float radius = (range.x + range.y)/2;
+  float radius = lerp(range.y, range.x, abs(constrain(prefs[0], -1, 1)));
   if(RANDOMIZE) radius = range.x + random(range.y - range.x);
   // calculate triangle parameters
   float cosr = (sq(len[0]) + sq(m) - sq(radius)) / (2*len[0]*m);
-  assert(cosr <= 1 + TOL);
+  assert(abs(cosr) <= 1 + TOL);
   if(cosr > 1) cosr = 1;
+  if(cosr < -1) cosr = -1;
   float d = len[0] * cosr;
   float h = len[0] * sqrt(1 - sq(cosr));
+  assert(!Float.isNaN(h));
   // calculate vectors
   PVector first[] = new PVector[1];
   first[0] = PVector.add(PVector.mult(disp_unit,d), PVector.mult(disp_perp,h));
-  PVector tail[] = inverseKinematics(rLen,PVector.sub(disp,first[0]));
+  PVector tail[] = inverseKinematics(rLen, PVector.sub(disp,first[0]), rPrefs);
   return (PVector[])concat(first, tail);
 }
 
