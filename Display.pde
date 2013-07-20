@@ -34,6 +34,7 @@ void start() {
 }
 
 void draw() {
+  background(255);
   
   if(keys[KEY_W] == KEY_DOWN) pref += .005 + random(TOL);
   if(keys[KEY_S] == KEY_DOWN) pref -= .005 + random(TOL);
@@ -63,14 +64,21 @@ void draw() {
   drawCircle(pen, 5);
 }
 
-void mousePressed() {
-  PVector p = new PVector(mouseX, mouseY);
-  if(mouseButton == LEFT) {
+void mouseEvent(int x, int y, int button) {
+  PVector p = new PVector(x, y);
+  if(button == LEFT) {
     from = p;
-  } else if(mouseButton == RIGHT) {
+  } else if(button == RIGHT) {
     to = p;
   }
-  background(255);
+}
+
+void mousePressed() {
+  mouseEvent(mouseX, mouseY, mouseButton);
+}
+
+void mouseDragged() {
+  mouseEvent(mouseX, mouseY, mouseButton);
 }
 
 void drawCircle(PVector a,float r) {
