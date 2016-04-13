@@ -18,9 +18,11 @@ PVector from;
 PVector to;
 float pref;
 
-void start() {
+void settings() {
   size(800,600);
-  background(255);
+}
+
+void start() {
   len = new float[N];
   pref = 0;
   // equal lengths
@@ -89,4 +91,3 @@ void drawCircle(PVector a,float r) {
 void drawLine(PVector a,PVector b) {
   line(a.x, a.y, b.x, b.y);
 }
-
